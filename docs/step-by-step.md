@@ -21,9 +21,15 @@ Este documento detalha as principais alterações e funcionalidades implementada
 ## Funcionalidades Implementadas
 
 ### Visualização da Frota
-- Carregamento dinâmico de dados de naves a partir de arquivos JSON na pasta `public/players`, utilizando um arquivo `index.json` para listar os jogadores.
-- Suporte a múltiplos formatos de arquivos JSON (formato simples e StarJump Fleet Viewer).
+- Carregamento dinâmico de dados de naves a partir de arquivos JSON exportados do [Hangar Link](https://hangar.link/fleet/canvas).
+- Suporte ao formato JSON do Hangar Link, que inclui apenas naves atualmente no hangar ou com CCU para atualizar/comprar.
 - Exibição da frota em modos de visualização em grade (cards) e lista.
+
+### Formato dos Dados
+- Os arquivos JSON dos jogadores devem ser exportados diretamente do [Hangar Link](https://hangar.link/fleet/canvas).
+- Apenas naves atualmente no hangar ou com CCU para atualizar/comprar devem ser incluídas.
+- O formato original do arquivo exportado deve ser mantido, sem modificações.
+- O arquivo `index.json` na pasta `public/players` lista todos os arquivos JSON dos jogadores.
 
 ### Detalhes das Naves e Donos
 - Cada nave exibe informações como fabricante e contagem de donos.

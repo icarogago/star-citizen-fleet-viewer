@@ -77,8 +77,19 @@ nf-fleet-viewer/
 
 O projeto carrega os dados dos jogadores dinamicamente a partir dos arquivos listados em `public/players/index.json`. Para adicionar um novo jogador à frota, siga estes passos:
 
-1.  Salve o arquivo JSON do novo jogador dentro da pasta `public/players/`. Certifique-se de que o arquivo está em um dos formatos suportados pela aplicação.
-2.  Edite o arquivo `public/players/index.json`. Este arquivo é um array JSON que lista os nomes de todos os arquivos de jogadores na pasta.
-3.  Adicione o nome do arquivo JSON do novo jogador ao array em `public/players/index.json`. Por exemplo, se você adicionou `NovoJogador.json`, o `index.json` deve ficar assim:
-
+1. Acesse o [Hangar Link](https://hangar.link/fleet/canvas) e faça login com sua conta RSI.
+2. Exporte sua frota no formato JSON, incluindo apenas as naves que você possui atualmente no hangar ou que tem CCU para atualizar/comprar.
+3. Salve o arquivo JSON do jogador dentro da pasta `public/players/` com o nome do jogador (ex: `Jogador.json`).
+4. Edite o arquivo `public/players/index.json` e adicione o nome do novo arquivo JSON ao array. Por exemplo:
+    ```json
+    [
+      "JulaoBR.json",
+      "Tiosan.json",
+      "NovoJogador.json"
+    ]
     ```
+
+**Importante:** 
+- Utilize apenas naves que você possui atualmente no hangar ou que tem CCU para atualizar/comprar.
+- O arquivo JSON deve ser exportado diretamente do [Hangar Link](https://hangar.link/fleet/canvas).
+- Mantenha o formato original do arquivo exportado, sem modificações.
