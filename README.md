@@ -2,6 +2,12 @@
 
 Projeto de estudo para visualização da frota de Star Citizen da comunidade Nova Fronteira.
 
+## Sobre o Projeto
+
+Este projeto foi inicialmente concebido através do Lovable, uma plataforma de desenvolvimento assistido por IA. A implementação e evolução do código foram realizadas utilizando o Cursor IDE, com melhorias significativas na interface e funcionalidades.
+
+A interface e algumas funcionalidades foram inspiradas no [Fleet Viewer](https://www.flaviomachado.com.br/frota/) do Flávio Machado, adaptadas e expandidas para atender às necessidades específicas da Nova Fronteira.
+
 ## Funcionalidades
 
 - Visualização da frota em modos de grade e lista.
@@ -75,52 +81,4 @@ O projeto carrega os dados dos jogadores dinamicamente a partir dos arquivos lis
 2.  Edite o arquivo `public/players/index.json`. Este arquivo é um array JSON que lista os nomes de todos os arquivos de jogadores na pasta.
 3.  Adicione o nome do arquivo JSON do novo jogador ao array em `public/players/index.json`. Por exemplo, se você adicionou `NovoJogador.json`, o `index.json` deve ficar assim:
 
-    ```json
-    [
-      "JulaoBR.json",
-      "Tiosan.json",
-      "NovoJogador.json"
-    ]
     ```
-
-4.  Salve as alterações no `index.json`.
-5.  Se o servidor de desenvolvimento (`npm run dev`) estiver rodando, pode ser necessário reiniciá-lo para que ele detecte a mudança no `index.json` e no novo arquivo JSON. Em produção, dependendo da configuração do servidor web, um refresh na página pode ser suficiente, mas reiniciar o servidor é a forma mais garantida.
-
-Após seguir esses passos, as naves do novo jogador deverão aparecer na frota ao carregar a aplicação.
-
-## 📝 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 👨‍💻 Autor
-
-**Ícaro Gago**
-- Desenvolvido como projeto de estudo.
-- GitHub: [@icarogago](https://github.com/icarogago)
-- Twitch: [Metro2030](https://www.twitch.tv/metro2030)
-
-## 🌐 Links da Organização
-
-- Discord: [Nova Fronteira](https://discord.gg/novafronteira)
-- Twitch: [Metro2030](https://www.twitch.tv/metro2030)
-
-## 📞 Suporte
-
-Para suporte, entre em contato através do Discord da Nova Fronteira.
-
----
-
-<div align="center">
-  <p>Desenvolvido com ❤️ por Ícaro Gago</p>
-  <p>
-    <a href="https://github.com/icarogago/star-citizen-fleet-viewer">
-      <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
-    </a>
-    <a href="https://www.twitch.tv/metro2030">
-      <img src="https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch"/>
-    </a>
-    <a href="https://discord.gg/novafronteira">
-      <img src="https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"/>
-    </a>
-  </p>
-</div>

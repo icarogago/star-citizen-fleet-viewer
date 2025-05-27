@@ -1,5 +1,21 @@
 # Documentação do Projeto NF Fleet Viewer
 
+## Créditos e Inspiração
+
+Este projeto teve sua origem no Lovable, uma plataforma de desenvolvimento assistido por IA. A implementação inicial foi concebida através desta plataforma, que forneceu a base estrutural do projeto.
+
+O desenvolvimento e evolução do código foram realizados utilizando o Cursor IDE, que permitiu melhorias significativas na interface e funcionalidades, transformando o projeto em uma aplicação mais robusta e moderna.
+
+A interface e algumas funcionalidades foram inspiradas no [Fleet Viewer](https://www.flaviomachado.com.br/frota/) do Flávio Machado, que serviu como referência para a implementação de recursos como:
+- Visualização em grade e lista
+- Filtros e busca
+- Exibição de informações detalhadas das naves
+- Layout responsivo
+
+Estas inspirações foram adaptadas e expandidas para atender às necessidades específicas da Nova Fronteira, resultando em uma aplicação única e personalizada.
+
+## Histórico de Desenvolvimento
+
 Este documento detalha as principais alterações e funcionalidades implementadas no projeto NF Fleet Viewer.
 
 ## Funcionalidades Implementadas
