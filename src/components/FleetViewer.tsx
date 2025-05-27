@@ -12,6 +12,7 @@ import LoadingSpinner from './LoadingSpinner';
 import Footer from './Footer';
 import FloatingButtons from './FloatingButtons';
 import { loadAllShips, groupShipsByOwners } from '../lib/playerService';
+import { Switch } from '@/components/ui/switch';
 
 const FleetViewer = () => {
   const [ships, setShips] = useState<Ship[]>([]);
@@ -137,14 +138,14 @@ const FleetViewer = () => {
               <Badge variant="outline" className={`${theme === 'dark' ? 'text-blue-300 border-blue-300' : 'text-blue-600 border-blue-600'}`}>
                 {Object.keys(filteredShips).length} naves
               </Badge>
-              <Button
-                onClick={toggleTheme}
-                variant="ghost"
-                size="icon"
-                className={`${theme === 'dark' ? 'text-yellow-300 hover:text-yellow-400' : 'text-gray-700 hover:text-gray-900'}`}
-              >
-                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </Button>
+              <div className="flex items-center space-x-2">
+                 {theme === 'dark' ? <Moon className="w-5 h-5 text-yellow-300" /> : <Sun className="w-5 h-5 text-gray-700" />}
+                 <Switch
+                    checked={theme === 'dark'}
+                    onCheckedChange={toggleTheme}
+                    id="theme-switch"
+                 />
+              </div>
               <Button
                 onClick={handleReloadFleet}
                 disabled={loading}

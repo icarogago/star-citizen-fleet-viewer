@@ -129,7 +129,7 @@ Este documento detalha as principais alterações e funcionalidades implementada
 - Adição de botões flutuantes para redes sociais
 - Implementação de suporte a temas claro/escuro
 - Criação de ícones SVG personalizados para Discord
-- Botão de alternância de tema no cabeçalho
+- **Substituição do botão de alternância de tema no cabeçalho por um componente Switch com animação.**
 - Adaptação de cores e estilos para ambos os temas
 
 ### Características dos Botões Flutuantes
@@ -152,6 +152,7 @@ Este documento detalha as principais alterações e funcionalidades implementada
 - Experiência visual mais rica
 - Maior flexibilidade para os usuários
 - Interface mais moderna e profissional
+- **Alternância de tema mais interativa e visualmente agradável com o componente Switch.**
 
 ### 10. Ajustes de Responsividade e Animações
 - Os cards agora exibem 2 colunas em telas mobile.
