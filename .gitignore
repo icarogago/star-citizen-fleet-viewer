@@ -17,7 +17,7 @@ dist-ssr
 .env.*
 
 # Cache
-.cache/
+.cache/   
 
 # Test coverage
 coverage/

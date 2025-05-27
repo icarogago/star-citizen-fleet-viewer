@@ -38,7 +38,7 @@ npm install
 npm run dev
 ```
 
-4. Acesse `http://localhost:5173` no seu navegador
+4. Acesse `http://localhost:8080/` no seu navegador
 
 ## 📁 Estrutura do Projeto
 
