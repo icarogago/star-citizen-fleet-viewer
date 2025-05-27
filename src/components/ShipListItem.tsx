@@ -6,9 +6,10 @@ import { Ship } from '../types/ship';
 interface ShipListItemProps {
   ship: Ship;
   ownerCount: number;
+  owners: string[];
 }
 
-const ShipListItem: React.FC<ShipListItemProps> = ({ ship, ownerCount }) => {
+const ShipListItem: React.FC<ShipListItemProps> = ({ ship, ownerCount, owners }) => {
   return (
     <Card className="bg-black/20 backdrop-blur-sm border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
       <CardContent className="p-4">
@@ -36,14 +37,11 @@ const ShipListItem: React.FC<ShipListItemProps> = ({ ship, ownerCount }) => {
                   {ship.name}
                 </h3>
                 <div className="flex flex-wrap gap-2 mt-1">
-                  <Badge variant="secondary" className="bg-black/40 text-blue-300 border-blue-500/30">
+                  <Badge variant="secondary" className="bg-black/60 text-blue-300 border-blue-500/30">
                     {ship.manufacturer}
                   </Badge>
-                  <Badge variant="outline" className="text-yellow-300 border-yellow-500/30">
-                    {ship.category}
-                  </Badge>
-                  <Badge variant="outline" className="text-green-300 border-green-500/30">
-                    {ship.owner}
+                  <Badge variant="outline" className="text-blue-300 border border-[#0a2d62]/60 dark:border-blue-500/60 text-blue-800 dark:text-blue-300">
+                    {ownerCount} {ownerCount === 1 ? 'Dono' : 'Donos'}
                   </Badge>
                 </div>
               </div>
@@ -77,9 +75,14 @@ const ShipListItem: React.FC<ShipListItemProps> = ({ ship, ownerCount }) => {
               </div>
             )}
 
-            <div className="text-xs">
-              <span className="text-blue-300">Donos:</span>
-              <span className="text-white ml-1">{ownerCount} {ownerCount === 1 ? 'Dono' : 'Donos'}</span>
+            {/* Lista de donos */}
+            <div className="text-sm dark:text-blue-300/80 text-blue-900/90">
+              <div className="font-medium mb-1 dark:text-blue-300 text-blue-900">Donos:</div>
+              <div className="space-y-1">
+                <span className="dark:text-blue-300 text-blue-900">
+                  {owners.map(owner => `[NF] ${owner}`).join(', ')}
+                </span>
+              </div>
             </div>
           </div>
         </div>

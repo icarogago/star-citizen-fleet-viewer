@@ -1,6 +1,36 @@
-# NF Fleet Viewer 🚀
+# NF Fleet Viewer
 
-Um visualizador de frota moderno e interativo para a organização Nova Fronteira no universo de Star Citizen. Este projeto foi desenvolvido primariamente para fins de estudo.
+Projeto de estudo para visualização da frota de Star Citizen da comunidade Nova Fronteira.
+
+## Funcionalidades
+
+- Visualização da frota em modos de grade e lista.
+- Carregamento dinâmico de dados dos jogadores a partir de arquivos JSON.
+- Busca por nome da nave ou dono.
+- Suporte a temas claro e escuro.
+- Layout responsivo para diferentes tamanhos de tela.
+
+## Como Configurar e Executar
+
+1. Clone este repositório.
+2. Instale as dependências: `npm install` ou `yarn install`.
+3. Crie o arquivo `public/players/index.json` com um array JSON contendo os nomes dos arquivos JSON dos jogadores (ex: `["JulaoBR.json", "Tiosan.json"]`). Coloque os arquivos JSON dos jogadores na pasta `public/players`.
+4. Inicie o servidor de desenvolvimento: `npm run dev` ou `yarn dev`.
+5. Abra o projeto no seu navegador (geralmente em `http://localhost:5173`).
+
+## Estrutura do Projeto
+
+- `public/players/`: Contém os arquivos JSON dos jogadores e o `index.json`.
+- `src/components/`: Componentes React da interface.
+- `src/lib/`: Funções de serviço (playerService.ts).
+- `src/types/`: Definições de tipos TypeScript.
+- `src/index.css`: Estilos globais e configuração do Tailwind CSS.
+- `index.html`: Arquivo HTML principal.
+- `postcss.config.js`: Configuração do PostCSS para processar Tailwind CSS.
+
+## Sobre o Projeto
+
+Este projeto foi desenvolvido como um estudo e demonstração das funcionalidades de visualização de frota e manipulação de dados.
 
 ## ✨ Características
 
@@ -19,26 +49,6 @@ Um visualizador de frota moderno e interativo para a organização Nova Fronteir
 - Tailwind CSS
 - Vite
 - Shadcn/ui
-
-## 🚀 Como Executar
-
-1. Clone o repositório:
-```bash
-git clone https://github.com/icarogago/nf-fleet-viewer.git
-```
-
-2. Instale as dependências:
-```bash
-cd nf-fleet-viewer
-npm install
-```
-
-3. Execute o projeto localmente:
-```bash
-npm run dev
-```
-
-4. Acesse `http://localhost:8080/` no seu navegador
 
 Você também pode visualizar o projeto implantado no Vercel aqui:
 [https://star-citizen-fleet-viewer.vercel.app/](https://star-citizen-fleet-viewer.vercel.app/)

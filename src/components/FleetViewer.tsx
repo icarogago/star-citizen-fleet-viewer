@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Grid, List, RefreshCw, Filter, Sun, Moon } from 'lucide-react';
+import { Search, Grid, List, RefreshCw, Filter, Sun, Moon, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,7 +18,6 @@ const FleetViewer = () => {
   const [groupedShips, setGroupedShips] = useState<{ [key: string]: { ship: Ship, owners: string[] } }>({});
   const [filteredShips, setFilteredShips] = useState<{ [key: string]: { ship: Ship, owners: string[] } }>({});
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedOwner, setSelectedOwner] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,12 +27,18 @@ const FleetViewer = () => {
     }
     return 'dark';
   });
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   // Restaurar tema ao carregar
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('nf-theme', theme);
-    document.documentElement.style.transition = 'background 0.3s, color 0.3s';
+    // Aplicar transição suave apenas em telas maiores
+    if (typeof window !== 'undefined' && window.innerWidth >= 768) { // 768px é o breakpoint 'md'
+      document.documentElement.style.transition = 'background 0.3s, color 0.3s';
+    } else {
+      document.documentElement.style.transition = 'none';
+    }
     // Notificar FloatingButtons para atualizar ícone do Discord
     const event = new Event('classChange');
     window.dispatchEvent(event);
@@ -76,18 +81,16 @@ const FleetViewer = () => {
     loadShips();
   }, []);
 
-  // Get unique values for filters
-  const owners = [...new Set(ships.map(ship => ship.owner))].sort();
-
-  // Filter ships based on search and filters
+  // Filter ships based on search
   useEffect(() => {
     const filtered = Object.entries(groupedShips).reduce((acc, [key, value]) => {
-      const matchesSearch = value.ship.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          value.ship.manufacturer.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesOwner = selectedOwner === 'all' || value.owners.includes(selectedOwner);
+      const searchLower = searchTerm.toLowerCase();
+      const matchesSearch = 
+        value.ship.name.toLowerCase().includes(searchLower) ||
+        value.ship.manufacturer.toLowerCase().includes(searchLower) ||
+        value.owners.some(owner => owner.toLowerCase().includes(searchLower));
 
-      if (matchesSearch && matchesOwner) {
+      if (matchesSearch) {
         acc[key] = value;
       }
 
@@ -95,7 +98,7 @@ const FleetViewer = () => {
     }, {} as { [key: string]: { ship: Ship, owners: string[] } });
 
     setFilteredShips(filtered);
-  }, [groupedShips, searchTerm, selectedOwner]);
+  }, [groupedShips, searchTerm]);
 
   const handleReloadFleet = async () => {
     setLoading(true);
@@ -114,7 +117,6 @@ const FleetViewer = () => {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setSelectedOwner('all');
   };
 
   return (
@@ -126,12 +128,12 @@ const FleetViewer = () => {
       <div className={`${theme === 'dark' ? 'bg-black/20' : 'bg-white/20'} backdrop-blur-sm border-b ${theme === 'dark' ? 'border-blue-500/20' : 'border-blue-200/20'}`}>
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 lg:justify-start justify-center w-full">
               <img src="/img/ships/FRONTEIRA-Logo.png" alt="Logo Nova Fronteira" className="w-12 h-12 object-contain" />
               <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Nova Fronteira</h1>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-center lg:justify-end w-full">
               <Badge variant="outline" className={`${theme === 'dark' ? 'text-blue-300 border-blue-300' : 'text-blue-600 border-blue-600'}`}>
                 {Object.keys(filteredShips).length} naves
               </Badge>
@@ -148,7 +150,7 @@ const FleetViewer = () => {
                 disabled={loading}
                 className={`${theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
               >
-                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 mr-2 ${loading && (typeof window === 'undefined' || window.innerWidth >= 768) ? 'animate-spin' : ''}`} />
                 Recarregar Frota
               </Button>
             </div>
@@ -162,51 +164,25 @@ const FleetViewer = () => {
         <div className="container mx-auto px-4 py-6">
           <Card className={`${theme === 'dark' ? 'bg-black/20 border-blue-500/20' : 'bg-white/20 border-black/20'} backdrop-blur-sm mb-6`}>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-                <div className="lg:col-span-2">
+              <div className="grid grid-cols-1 gap-4 items-end">
+                <div className="w-full">
                   <label className={`text-sm font-medium mb-2 block ${theme === 'dark' ? 'text-blue-300' : 'text-[#0a2d62]'}`}>
-                    Buscar naves
+                    Buscar naves ou donos
                   </label>
                   <div className="relative">
-                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300" />
+                    <Search className={`w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-blue-300' : 'text-gray-600'}`} />
                     <Input
-                      placeholder="Nome ou fabricante..."
+                      placeholder="Digite o nome da nave ou do dono..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
+                      onFocus={() => setIsFilterExpanded(true)}
                       className={`pl-10 ${theme === 'dark' ? 'bg-black/20 border-blue-500/30 text-white placeholder:text-blue-300/50' : 'bg-white border-[#c0c2c4] text-[#3d71b1] placeholder:text-[#65758c]'}`}
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className={`text-sm font-medium mb-2 block ${theme === 'dark' ? 'text-blue-300' : 'text-[#0a2d62]'}`}>
-                    Dono
-                  </label>
-                  <Select value={selectedOwner} onValueChange={setSelectedOwner}>
-                    <SelectTrigger className={`${theme === 'dark' ? 'bg-black/20 border-blue-500/30 text-white' : 'bg-white border-[#c0c2c4] text-[#3d71b1]'}`}>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className={`${theme === 'dark' ? 'bg-slate-800 border-blue-500/30' : 'bg-white border-[#c0c2c4]'}`}>
-                      <SelectItem value="all" className={theme === 'dark' ? 'text-white' : 'text-[#3d71b1]'}>Todos</SelectItem>
-                      {owners.map(owner => (
-                        <SelectItem key={owner} value={owner} className={theme === 'dark' ? 'text-white' : 'text-[#3d71b1]'}>
-                          {owner}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex gap-2 items-end md:items-center h-full">
-                  <Button
-                    variant="outline"
-                    onClick={clearFilters}
-                    className={`flex-1 ${theme === 'dark' ? 'border-blue-500/30 text-blue-300 hover:bg-blue-500/10' : 'border-[#c0c2c4] text-[#0a2d62] bg-[#f5f7fa] hover:bg-[#c0c2c4]/30 hover:text-[#3d71b1]'} transition-colors`}
-                  >
-                    <Filter className="w-4 h-4 mr-2" />
-                    Limpar
-                  </Button>
-                  <div className={`flex rounded-md overflow-hidden border ${theme === 'dark' ? 'border-blue-500/30' : 'border-black/20'}`}>
+                <div className="flex gap-2 items-end md:items-center h-full w-full">
+                  <div className={`flex rounded-md overflow-hidden border ${theme === 'dark' ? 'border-blue-500/30' : 'border-black/20'}`}> 
                     <Button
                       variant={viewMode === 'grid' ? 'default' : 'ghost'}
                       size="sm"
@@ -235,13 +211,13 @@ const FleetViewer = () => {
           {/* Error Message */}
           {error && !loading && (
             <div className="text-center py-12">
-              <div className="text-red-300 text-lg mb-2">Erro ao carregar naves</div>
-              <div className="text-red-300/60">{error}</div>
+              <div className={`text-lg mb-2 ${theme === 'dark' ? 'text-red-300' : 'text-red-700'}`}>Erro ao carregar naves</div>
+              <div className={`text-sm ${theme === 'dark' ? 'text-red-300/60' : 'text-red-700/60'}`}>{error}</div>
               <Button
                 onClick={handleReloadFleet}
-                className="mt-4 bg-red-600 hover:bg-red-700 text-white"
+                className={`mt-4 ${theme === 'dark' ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'} text-white`}
               >
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Tentar Novamente
               </Button>
             </div>
@@ -251,7 +227,7 @@ const FleetViewer = () => {
           {!loading && !error && (
             <>
               {viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
                   {Object.entries(filteredShips)
                     .sort(([keyA, { ship: shipA }], [keyB, { ship: shipB }]) => {
                       // Verifica se a nave começa com número
@@ -290,15 +266,15 @@ const FleetViewer = () => {
                       return shipA.name.localeCompare(shipB.name);
                     })
                     .map(([key, { ship, owners }]) => (
-                      <ShipListItem key={key} ship={ship} ownerCount={owners.length} />
+                      <ShipListItem key={key} ship={ship} ownerCount={owners.length} owners={owners} />
                     ))}
                 </div>
               )}
 
               {Object.keys(filteredShips).length === 0 && (
                 <div className="text-center py-12">
-                  <div className="text-blue-300 text-lg mb-2">Nenhuma nave encontrada</div>
-                  <div className="text-blue-300/60">Tente ajustar os filtros de busca</div>
+                  <div className={`text-lg mb-2 ${theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>Nenhuma nave encontrada</div>
+                  <div className={`text-sm ${theme === 'dark' ? 'text-blue-300/60' : 'text-blue-700/60'}`}>Tente ajustar os filtros de busca</div>
                 </div>
               )}
             </>
