@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,9 +5,10 @@ import { Ship } from '../types/ship';
 
 interface ShipListItemProps {
   ship: Ship;
+  ownerCount: number;
 }
 
-const ShipListItem: React.FC<ShipListItemProps> = ({ ship }) => {
+const ShipListItem: React.FC<ShipListItemProps> = ({ ship, ownerCount }) => {
   return (
     <Card className="bg-black/20 backdrop-blur-sm border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10">
       <CardContent className="p-4">
@@ -76,6 +76,11 @@ const ShipListItem: React.FC<ShipListItemProps> = ({ ship }) => {
                 <span className="text-white ml-1">{ship.specifications.role}</span>
               </div>
             )}
+
+            <div className="text-xs">
+              <span className="text-blue-300">Donos:</span>
+              <span className="text-white ml-1">{ownerCount} {ownerCount === 1 ? 'Dono' : 'Donos'}</span>
+            </div>
           </div>
         </div>
       </CardContent>

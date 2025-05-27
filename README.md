@@ -1,73 +1,92 @@
-# Welcome to your Lovable project
+# NF Fleet Viewer 🚀
 
-## Project info
+Um visualizador de frota moderno e interativo para a organização Nova Fronteira no universo de Star Citizen. Este projeto foi desenvolvido primariamente para fins de estudo.
 
-**URL**: https://lovable.dev/projects/842cfc07-4288-4130-a92d-c9ebd630a860
+## ✨ Características
 
-## How can I edit this code?
+- 🎨 Interface moderna e responsiva
+- 🔍 Sistema de busca e filtros avançados
+- 👥 Visualização de donos de naves
+- 📱 Suporte a visualização em grid e lista
+- 🖼️ Exibição de imagens das naves
+- 🔄 Atualização dinâmica dos dados (via `index.json`)
+- 📊 Estatísticas da frota em tempo real
 
-There are several ways of editing your application.
+## 🛠️ Tecnologias Utilizadas
 
-**Use Lovable**
+- React
+- TypeScript
+- Tailwind CSS
+- Vite
+- Shadcn/ui
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/842cfc07-4288-4130-a92d-c9ebd630a860) and start prompting.
+## 🚀 Como Executar
 
-Changes made via Lovable will be committed automatically to this repo.
+1. Clone o repositório:
+```bash
+git clone https://github.com/icarogago/nf-fleet-viewer.git
+```
 
-**Use your preferred IDE**
+2. Instale as dependências:
+```bash
+cd nf-fleet-viewer
+npm install
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Execute o projeto:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Acesse `http://localhost:5173` no seu navegador
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📁 Estrutura do Projeto
 
-**Use GitHub Codespaces**
+```
+nf-fleet-viewer/
+├── public/
+│   └── players/         # Arquivos JSON dos players (incluindo index.json)
+├── src/
+│   ├── components/      # Componentes React
+│   ├── lib/            # Serviços e utilitários
+│   ├── types/          # Definições de tipos
+│   └── styles/         # Estilos globais
+└── docs/               # Documentação
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📝 Licença
 
-## What technologies are used for this project?
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-This project is built with:
+## 👨‍💻 Autor
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+**Ícaro Gago**
+- Desenvolvido como projeto de estudo.
+- GitHub: [@icarogago](https://github.com/icarogago)
+- Twitch: [Metro2030](https://www.twitch.tv/metro2030)
 
-## How can I deploy this project?
+## 🌐 Links da Organização
 
-Simply open [Lovable](https://lovable.dev/projects/842cfc07-4288-4130-a92d-c9ebd630a860) and click on Share -> Publish.
+- Discord: [Nova Fronteira](https://discord.gg/novafronteira)
+- Twitch: [Metro2030](https://www.twitch.tv/metro2030)
 
-## Can I connect a custom domain to my Lovable project?
+## 📞 Suporte
 
-Yes, you can!
+Para suporte, entre em contato através do Discord da Nova Fronteira.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+<div align="center">
+  <p>Desenvolvido com ❤️ por Ícaro Gago</p>
+  <p>
+    <a href="https://github.com/icarogago/star-citizen-fleet-viewer">
+      <img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
+    </a>
+    <a href="https://www.twitch.tv/metro2030">
+      <img src="https://img.shields.io/badge/Twitch-9146FF?style=for-the-badge&logo=twitch&logoColor=white" alt="Twitch"/>
+    </a>
+    <a href="https://discord.gg/novafronteira">
+      <img src="https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"/>
+    </a>
+  </p>
+</div>

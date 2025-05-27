@@ -1,84 +1,152 @@
-
 import React, { useState, useEffect } from 'react';
-import { Search, Grid, List, RefreshCw, Filter } from 'lucide-react';
+import { Search, Grid, List, RefreshCw, Filter, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { shipData } from '../data/shipData';
+import { Ship } from '../types/ship';
 import ShipCard from './ShipCard';
 import ShipListItem from './ShipListItem';
 import LoadingSpinner from './LoadingSpinner';
+import Footer from './Footer';
+import FloatingButtons from './FloatingButtons';
+import { loadAllShips, groupShipsByOwners } from '../lib/playerService';
 
 const FleetViewer = () => {
-  const [ships, setShips] = useState(shipData);
-  const [filteredShips, setFilteredShips] = useState(shipData);
+  const [ships, setShips] = useState<Ship[]>([]);
+  const [groupedShips, setGroupedShips] = useState<{ [key: string]: { ship: Ship, owners: string[] } }>({});
+  const [filteredShips, setFilteredShips] = useState<{ [key: string]: { ship: Ship, owners: string[] } }>({});
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedManufacturer, setSelectedManufacturer] = useState('all');
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedOwner, setSelectedOwner] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('nf-theme') === 'light' ? 'light' : 'dark';
+    }
+    return 'dark';
+  });
+
+  // Restaurar tema ao carregar
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('nf-theme', theme);
+    document.documentElement.style.transition = 'background 0.3s, color 0.3s';
+    // Notificar FloatingButtons para atualizar ícone do Discord
+    const event = new Event('classChange');
+    window.dispatchEvent(event);
+  }, [theme]);
+
+  // Toggle theme
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark');
+  };
+
+  // Load ships on component mount
+  useEffect(() => {
+    const loadShips = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        console.log('Iniciando carregamento de naves...');
+        const loadedShips = await loadAllShips();
+        console.log('Naves carregadas:', loadedShips);
+        
+        if (loadedShips.length === 0) {
+          setError('Nenhuma nave foi encontrada. Verifique se os arquivos JSON estão no lugar correto.');
+          return;
+        }
+
+        setShips(loadedShips);
+        const grouped = groupShipsByOwners(loadedShips);
+        console.log('Naves agrupadas:', grouped);
+        setGroupedShips(grouped);
+        setFilteredShips(grouped);
+      } catch (error) {
+        console.error('Erro ao carregar naves:', error);
+        setError('Erro ao carregar as naves. Por favor, tente novamente.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadShips();
+  }, []);
 
   // Get unique values for filters
-  const manufacturers = [...new Set(ships.map(ship => ship.manufacturer))];
-  const categories = [...new Set(ships.map(ship => ship.category))];
-  const owners = [...new Set(ships.map(ship => ship.owner))];
+  const owners = [...new Set(ships.map(ship => ship.owner))].sort();
 
   // Filter ships based on search and filters
   useEffect(() => {
-    let filtered = ships.filter(ship => {
-      const matchesSearch = ship.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           ship.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           ship.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const filtered = Object.entries(groupedShips).reduce((acc, [key, value]) => {
+      const matchesSearch = value.ship.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          value.ship.manufacturer.toLowerCase().includes(searchTerm.toLowerCase());
       
-      const matchesManufacturer = selectedManufacturer === 'all' || ship.manufacturer === selectedManufacturer;
-      const matchesCategory = selectedCategory === 'all' || ship.category === selectedCategory;
-      const matchesOwner = selectedOwner === 'all' || ship.owner === selectedOwner;
+      const matchesOwner = selectedOwner === 'all' || value.owners.includes(selectedOwner);
 
-      return matchesSearch && matchesManufacturer && matchesCategory && matchesOwner;
-    });
+      if (matchesSearch && matchesOwner) {
+        acc[key] = value;
+      }
+
+      return acc;
+    }, {} as { [key: string]: { ship: Ship, owners: string[] } });
 
     setFilteredShips(filtered);
-  }, [ships, searchTerm, selectedManufacturer, selectedCategory, selectedOwner]);
+  }, [groupedShips, searchTerm, selectedOwner]);
 
   const handleReloadFleet = async () => {
     setLoading(true);
-    // Simulate loading delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setShips([...shipData]);
-    setLoading(false);
+    try {
+      const loadedShips = await loadAllShips();
+      setShips(loadedShips);
+      const grouped = groupShipsByOwners(loadedShips);
+      setGroupedShips(grouped);
+      setFilteredShips(grouped);
+    } catch (error) {
+      console.error('Erro ao recarregar naves:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearFilters = () => {
     setSearchTerm('');
-    setSelectedManufacturer('all');
-    setSelectedCategory('all');
     setSelectedOwner('all');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <div className={`min-h-screen flex flex-col ${theme === 'dark' ? 'bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900' : 'bg-gradient-to-br from-slate-100 via-blue-100 to-slate-100'}`}>
+      {/* Floating Buttons */}
+      <FloatingButtons />
+
       {/* Header */}
-      <div className="bg-black/20 backdrop-blur-sm border-b border-blue-500/20">
+      <div className={`${theme === 'dark' ? 'bg-black/20' : 'bg-white/20'} backdrop-blur-sm border-b ${theme === 'dark' ? 'border-blue-500/20' : 'border-blue-200/20'}`}>
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-xl">★</span>
-              </div>
-              <h1 className="text-3xl font-bold text-white">Frota Star Citizen</h1>
+              <img src="/img/ships/FRONTEIRA-Logo.png" alt="Logo Nova Fronteira" className="w-12 h-12 object-contain" />
+              <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Nova Fronteira</h1>
             </div>
             
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-blue-300 border-blue-300">
-                {filteredShips.length} naves
+              <Badge variant="outline" className={`${theme === 'dark' ? 'text-blue-300 border-blue-300' : 'text-blue-600 border-blue-600'}`}>
+                {Object.keys(filteredShips).length} naves
               </Badge>
+              <Button
+                onClick={toggleTheme}
+                variant="ghost"
+                size="icon"
+                className={`${theme === 'dark' ? 'text-yellow-300 hover:text-yellow-400' : 'text-gray-700 hover:text-gray-900'}`}
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </Button>
               <Button
                 onClick={handleReloadFleet}
                 disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className={`${theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Recarregar Frota
@@ -88,144 +156,158 @@ const FleetViewer = () => {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="container mx-auto px-4 py-6">
-        <Card className="bg-black/20 backdrop-blur-sm border-blue-500/20 mb-6">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 items-end">
-              <div className="lg:col-span-2">
-                <label className="text-sm font-medium text-blue-300 mb-2 block">
-                  Buscar naves
-                </label>
-                <div className="relative">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300" />
-                  <Input
-                    placeholder="Nome, fabricante ou descrição..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-black/20 border-blue-500/30 text-white placeholder:text-blue-300/50"
-                  />
+      {/* Main Content */}
+      <div className="flex-1">
+        {/* Filters */}
+        <div className="container mx-auto px-4 py-6">
+          <Card className={`${theme === 'dark' ? 'bg-black/20 border-blue-500/20' : 'bg-white/20 border-black/20'} backdrop-blur-sm mb-6`}>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+                <div className="lg:col-span-2">
+                  <label className={`text-sm font-medium mb-2 block ${theme === 'dark' ? 'text-blue-300' : 'text-[#0a2d62]'}`}>
+                    Buscar naves
+                  </label>
+                  <div className="relative">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300" />
+                    <Input
+                      placeholder="Nome ou fabricante..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className={`pl-10 ${theme === 'dark' ? 'bg-black/20 border-blue-500/30 text-white placeholder:text-blue-300/50' : 'bg-white border-[#c0c2c4] text-[#3d71b1] placeholder:text-[#65758c]'}`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={`text-sm font-medium mb-2 block ${theme === 'dark' ? 'text-blue-300' : 'text-[#0a2d62]'}`}>
+                    Dono
+                  </label>
+                  <Select value={selectedOwner} onValueChange={setSelectedOwner}>
+                    <SelectTrigger className={`${theme === 'dark' ? 'bg-black/20 border-blue-500/30 text-white' : 'bg-white border-[#c0c2c4] text-[#3d71b1]'}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className={`${theme === 'dark' ? 'bg-slate-800 border-blue-500/30' : 'bg-white border-[#c0c2c4]'}`}>
+                      <SelectItem value="all" className={theme === 'dark' ? 'text-white' : 'text-[#3d71b1]'}>Todos</SelectItem>
+                      {owners.map(owner => (
+                        <SelectItem key={owner} value={owner} className={theme === 'dark' ? 'text-white' : 'text-[#3d71b1]'}>
+                          {owner}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-2 items-end md:items-center h-full">
+                  <Button
+                    variant="outline"
+                    onClick={clearFilters}
+                    className={`flex-1 ${theme === 'dark' ? 'border-blue-500/30 text-blue-300 hover:bg-blue-500/10' : 'border-[#c0c2c4] text-[#0a2d62] bg-[#f5f7fa] hover:bg-[#c0c2c4]/30 hover:text-[#3d71b1]'} transition-colors`}
+                  >
+                    <Filter className="w-4 h-4 mr-2" />
+                    Limpar
+                  </Button>
+                  <div className={`flex rounded-md overflow-hidden border ${theme === 'dark' ? 'border-blue-500/30' : 'border-black/20'}`}>
+                    <Button
+                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('grid')}
+                      className={`rounded-none ${viewMode === 'grid' ? 'bg-blue-600 text-white dark:bg-blue-600 dark:text-white' : 'text-blue-300 hover:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/10 text-blue-700 hover:bg-blue-200/20'} h-10`}
+                    >
+                      <Grid className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant={viewMode === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setViewMode('list')}
+                      className={`rounded-none ${viewMode === 'list' ? 'bg-blue-600 text-white dark:bg-blue-600 dark:text-white' : 'text-blue-300 hover:bg-blue-500/10 dark:text-blue-300 dark:hover:bg-blue-500/10 text-blue-700 hover:bg-blue-200/20'} h-10`}
+                    >
+                      <List className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
 
-              <div>
-                <label className="text-sm font-medium text-blue-300 mb-2 block">
-                  Fabricante
-                </label>
-                <Select value={selectedManufacturer} onValueChange={setSelectedManufacturer}>
-                  <SelectTrigger className="bg-black/20 border-blue-500/30 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-blue-500/30">
-                    <SelectItem value="all">Todos</SelectItem>
-                    {manufacturers.map(manufacturer => (
-                      <SelectItem key={manufacturer} value={manufacturer} className="text-white">
-                        {manufacturer}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+          {/* Loading */}
+          {loading && <LoadingSpinner />}
 
-              <div>
-                <label className="text-sm font-medium text-blue-300 mb-2 block">
-                  Categoria
-                </label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="bg-black/20 border-blue-500/30 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-blue-500/30">
-                    <SelectItem value="all">Todas</SelectItem>
-                    {categories.map(category => (
-                      <SelectItem key={category} value={category} className="text-white">
-                        {category}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-blue-300 mb-2 block">
-                  Proprietário
-                </label>
-                <Select value={selectedOwner} onValueChange={setSelectedOwner}>
-                  <SelectTrigger className="bg-black/20 border-blue-500/30 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-blue-500/30">
-                    <SelectItem value="all">Todos</SelectItem>
-                    {owners.map(owner => (
-                      <SelectItem key={owner} value={owner} className="text-white">
-                        {owner}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={clearFilters}
-                  className="flex-1 border-blue-500/30 text-blue-300 hover:bg-blue-500/10"
-                >
-                  <Filter className="w-4 h-4 mr-2" />
-                  Limpar
-                </Button>
-                <div className="flex rounded-md overflow-hidden border border-blue-500/30">
-                  <Button
-                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('grid')}
-                    className={`rounded-none ${viewMode === 'grid' ? 'bg-blue-600' : 'text-blue-300 hover:bg-blue-500/10'}`}
-                  >
-                    <Grid className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant={viewMode === 'list' ? 'default' : 'ghost'}
-                    size="sm"
-                    onClick={() => setViewMode('list')}
-                    className={`rounded-none ${viewMode === 'list' ? 'bg-blue-600' : 'text-blue-300 hover:bg-blue-500/10'}`}
-                  >
-                    <List className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
+          {/* Error Message */}
+          {error && !loading && (
+            <div className="text-center py-12">
+              <div className="text-red-300 text-lg mb-2">Erro ao carregar naves</div>
+              <div className="text-red-300/60">{error}</div>
+              <Button
+                onClick={handleReloadFleet}
+                className="mt-4 bg-red-600 hover:bg-red-700 text-white"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" />
+                Tentar Novamente
+              </Button>
             </div>
-          </CardContent>
-        </Card>
+          )}
 
-        {/* Loading */}
-        {loading && <LoadingSpinner />}
+          {/* Ships Display */}
+          {!loading && !error && (
+            <>
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                  {Object.entries(filteredShips)
+                    .sort(([keyA, { ship: shipA }], [keyB, { ship: shipB }]) => {
+                      // Verifica se a nave começa com número
+                      const aStartsWithNumber = /^\d/.test(shipA.name);
+                      const bStartsWithNumber = /^\d/.test(shipB.name);
 
-        {/* Ships Display */}
-        {!loading && (
-          <>
-            {viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-                {filteredShips.map((ship) => (
-                  <ShipCard key={ship.id} ship={ship} />
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredShips.map((ship) => (
-                  <ShipListItem key={ship.id} ship={ship} />
-                ))}
-              </div>
-            )}
+                      // Se uma começa com número e a outra não, a que começa com número vem primeiro
+                      if (aStartsWithNumber && !bStartsWithNumber) return -1;
+                      if (!aStartsWithNumber && bStartsWithNumber) return 1;
 
-            {filteredShips.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-blue-300 text-lg mb-2">Nenhuma nave encontrada</div>
-                <div className="text-blue-300/60">Tente ajustar os filtros de busca</div>
-              </div>
-            )}
-          </>
-        )}
+                      // Se ambas começam com número ou ambas não começam, ordena alfabeticamente
+                      return shipA.name.localeCompare(shipB.name);
+                    })
+                    .map(([key, { ship, owners }]) => (
+                      <ShipCard
+                        key={key}
+                        ship={ship}
+                        ownerCount={owners.length}
+                        owners={owners}
+                      />
+                    ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {Object.entries(filteredShips)
+                    .sort(([keyA, { ship: shipA }], [keyB, { ship: shipB }]) => {
+                      // Verifica se a nave começa com número
+                      const aStartsWithNumber = /^\d/.test(shipA.name);
+                      const bStartsWithNumber = /^\d/.test(shipB.name);
+
+                      // Se uma começa com número e a outra não, a que começa com número vem primeiro
+                      if (aStartsWithNumber && !bStartsWithNumber) return -1;
+                      if (!aStartsWithNumber && bStartsWithNumber) return 1;
+
+                      // Se ambas começam com número ou ambas não começam, ordena alfabeticamente
+                      return shipA.name.localeCompare(shipB.name);
+                    })
+                    .map(([key, { ship, owners }]) => (
+                      <ShipListItem key={key} ship={ship} ownerCount={owners.length} />
+                    ))}
+                </div>
+              )}
+
+              {Object.keys(filteredShips).length === 0 && (
+                <div className="text-center py-12">
+                  <div className="text-blue-300 text-lg mb-2">Nenhuma nave encontrada</div>
+                  <div className="text-blue-300/60">Tente ajustar os filtros de busca</div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Footer */}
+      <Footer theme={theme} />
     </div>
   );
 };

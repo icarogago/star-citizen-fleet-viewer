@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,9 +5,11 @@ import { Ship } from '../types/ship';
 
 interface ShipCardProps {
   ship: Ship;
+  ownerCount: number;
+  owners: string[];
 }
 
-const ShipCard: React.FC<ShipCardProps> = ({ ship }) => {
+const ShipCard: React.FC<ShipCardProps> = ({ ship, ownerCount, owners }) => {
   return (
     <Card className="group bg-black/20 backdrop-blur-sm border-blue-500/20 hover:border-blue-400/40 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 overflow-hidden">
       <div className="relative">
@@ -32,51 +33,36 @@ const ShipCard: React.FC<ShipCardProps> = ({ ship }) => {
             {ship.manufacturer}
           </Badge>
         </div>
-
-        {/* Owner badge */}
-        <div className="absolute top-3 right-3">
-          <Badge variant="outline" className="bg-black/60 text-green-300 border-green-500/30">
-            {ship.owner}
-          </Badge>
-        </div>
       </div>
 
       <CardContent className="p-4 space-y-3">
         <div>
-          <h3 className="text-xl font-bold text-white group-hover:text-blue-300 transition-colors">
+          <h3 className="text-xl font-bold group-hover:text-blue-300 transition-colors text-white dark:text-white text-gray-900">
             {ship.name}
           </h3>
-          <Badge variant="outline" className="mt-1 text-yellow-300 border-yellow-500/30">
-            {ship.category}
+          <Badge variant="outline" className="mt-1 mr-auto text-blue-300 border border-[#0a2d62]/60 dark:border-blue-500/60 text-blue-800 dark:text-blue-300">
+            {ownerCount} {ownerCount === 1 ? 'Dono' : 'Donos'}
           </Badge>
         </div>
 
-        <p className="text-blue-200/80 text-sm line-clamp-3">
-          {ship.description}
-        </p>
-
-        {ship.specifications && (
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-500/20">
-            {ship.specifications.crew && (
-              <div className="text-xs">
-                <span className="text-blue-300">Tripulação:</span>
-                <span className="text-white ml-1">{ship.specifications.crew}</span>
+        {/* Lista de donos */}
+        <div className={`text-sm ${'dark:text-blue-300/80 text-blue-900/90'}`}>
+          <div className={`font-medium mb-1 ${'dark:text-blue-300 text-blue-900'}`}>Donos:</div>
+          <div className="space-y-1">
+            {owners.map((owner, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <img
+                  src={typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
+                    ? 'https://img.icons8.com/forma-bold-filled/24/ffffff/forward.png'
+                    : 'https://img.icons8.com/forma-bold-filled/24/forward.png'}
+                  alt="Forward"
+                  className="w-4 h-4"
+                />
+                <span className="dark:text-blue-300 text-blue-900">{owner}</span>
               </div>
-            )}
-            {ship.specifications.cargo && (
-              <div className="text-xs">
-                <span className="text-blue-300">Carga:</span>
-                <span className="text-white ml-1">{ship.specifications.cargo}</span>
-              </div>
-            )}
-            {ship.specifications.role && (
-              <div className="text-xs col-span-2">
-                <span className="text-blue-300">Função:</span>
-                <span className="text-white ml-1">{ship.specifications.role}</span>
-              </div>
-            )}
+            ))}
           </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   );

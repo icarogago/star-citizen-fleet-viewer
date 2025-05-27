@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    fs: {
+      // Permitir servir arquivos da pasta public
+      allow: ['..']
+    }
   },
   plugins: [
     react(),
@@ -19,4 +23,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Configuração para servir arquivos estáticos
+  publicDir: 'public',
+  // Configuração para importar JSON
+  json: {
+    stringify: true
+  }
 }));

@@ -1,0 +1,52 @@
+{
+  "type": "starjumpFleetviewer",
+  "version": 1,
+  "backgroundColor": "0c000000",
+  "canvasZoom": "0.0478630092",
+  "canvasPanX": "0.0000000000",
+  "canvasPanY": "0.0000000000",
+  "shipScaleFactor": "4.0000000000",
+  "minZoom": "0.0010000000",
+  "maxZoom": "1.0000000000",
+  "canvasItems": [
+    {
+      "id": "ab60491a-2c5d-424b-84bb-dc8c7b982a21",
+      "itemType": "SHIP",
+      "x": "-1395.3653777411",
+      "y": "-1812.4807655901",
+      "topRotation": "270.0000000000",
+      "zoom": "1.0000000000",
+      "viewAngle": "iso",
+      "imageRes": "l",
+      "imageScale": "2.2945570971",
+      "dropShadow": "true",
+      "shipSlug": "apollo-medivac",
+      "variantSlug": "",
+      "width": "8600.0000000000",
+      "height": "4956.2433297759",
+      "autoPositionDistance": "800.0000000000",
+      "autoPositionAlignment": "Alignment.bottomCenter",
+      "defaultText": "Apollo Medivac",
+      "parentOfGroup": "a3cbb855-a17d-4c40-90a8-6458a75cbc3c"
+    },
+    {
+      "id": "a3cbb855-a17d-4c40-90a8-6458a75cbc3c",
+      "itemType": "TEXTGROUP",
+      "x": "-1395.3653777411",
+      "y": "2065.6408992978",
+      "text": "Apollo Medivac",
+      "width": "5956.1894531250",
+      "height": "1200.0000000000",
+      "align": "left",
+      "fontRes": "m",
+      "fontFamily": "Font1",
+      "statfontRes": "s",
+      "statfontFamily": "Font1",
+      "childOfShip": "ab60491a-2c5d-424b-84bb-dc8c7b982a21",
+      "color": "b3ffffff",
+      "stats": [
+        "LENGTH"
+      ]
+    }
+  ]
+}
