@@ -33,12 +33,15 @@ cd nf-fleet-viewer
 npm install
 ```
 
-3. Execute o projeto:
+3. Execute o projeto localmente:
 ```bash
 npm run dev
 ```
 
 4. Acesse `http://localhost:8080/` no seu navegador
+
+Você também pode visualizar o projeto implantado no Vercel aqui:
+[https://star-citizen-fleet-viewer.vercel.app/](https://star-citizen-fleet-viewer.vercel.app/)
 
 ## 📁 Estrutura do Projeto
 
