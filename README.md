@@ -54,6 +54,27 @@ nf-fleet-viewer/
 └── docs/               # Documentação
 ```
 
+## ➕ Adicionando Novos Jogadores
+
+O projeto carrega os dados dos jogadores dinamicamente a partir dos arquivos listados em `public/players/index.json`. Para adicionar um novo jogador à frota, siga estes passos:
+
+1.  Salve o arquivo JSON do novo jogador dentro da pasta `public/players/`. Certifique-se de que o arquivo está em um dos formatos suportados pela aplicação.
+2.  Edite o arquivo `public/players/index.json`. Este arquivo é um array JSON que lista os nomes de todos os arquivos de jogadores na pasta.
+3.  Adicione o nome do arquivo JSON do novo jogador ao array em `public/players/index.json`. Por exemplo, se você adicionou `NovoJogador.json`, o `index.json` deve ficar assim:
+
+    ```json
+    [
+      "JulaoBR.json",
+      "Tiosan.json",
+      "NovoJogador.json"
+    ]
+    ```
+
+4.  Salve as alterações no `index.json`.
+5.  Se o servidor de desenvolvimento (`npm run dev`) estiver rodando, pode ser necessário reiniciá-lo para que ele detecte a mudança no `index.json` e no novo arquivo JSON. Em produção, dependendo da configuração do servidor web, um refresh na página pode ser suficiente, mas reiniciar o servidor é a forma mais garantida.
+
+Após seguir esses passos, as naves do novo jogador deverão aparecer na frota ao carregar a aplicação.
+
 ## 📝 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
